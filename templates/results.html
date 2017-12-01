@@ -1,0 +1,252 @@
+<!doctype html>
+<head>
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+<script type="text/javascript">
+    function nextPage() {
+        console.log("next page");
+        var currentPage = document.getElementById("page").innerHTML;
+        var nextPage = parseInt(currentPage) + 1;
+        var perPage = document.getElementById("per_page").value;
+        var dest_query = document.getElementById("dest_query").value;
+        var prop_query = document.getElementById("prop_query").value;
+        var sleep_query = document.getElementById("sleep_query").value;
+        var price_query = document.getElementById("price_query").value;
+        var amts_query = document.getElementById("amts_query").value;
+        if (dest_query == "") {
+            dest_query = null;
+        }
+        if (prop_query == "") {
+            prop_query = null;
+        }
+        if (sleep_query == "") {
+            sleep_query = null;
+        }
+        if (price_query == "") {
+            price_query = null;
+        }
+        if (amts_query == "") {
+            amts_query = null;
+        }
+        var sortBy = null;
+        var radios = document.getElementsByName("sort");
+        for (var i=0; i<radios.length; i++) {
+            if (radios[i].checked) {
+                sortBy = radios[i].value;
+            }
+        }
+        location.href = "http://127.0.0.1:5000/search/" + nextPage + "/" + perPage + "/" + dest_query + "/" + prop_query + "/" + sleep_query + "/" + price_query + "/" + amts_query + "/" + sortBy; 
+    }
+    function reload() {
+        console.log("reload");
+        var perPage = document.getElementById("per_page").value;
+        location.href = "http://127.0.0.1:5000/search/" + 1 + "/" + perPage + "/null/null/null/null/null/null"; 
+    }
+    function search() {
+        console.log("search");
+        var nextPage = 1;
+        var perPage = document.getElementById("per_page").value;
+        var dest_query = document.getElementById("dest_query").value;
+        var prop_query = document.getElementById("prop_query").value;
+        var sleep_query = document.getElementById("sleep_query").value;
+        var price_query = document.getElementById("price_query").value;
+        var amts_query = document.getElementById("amts_query").value;
+        if (dest_query == "") {
+            dest_query = null;
+        }
+        if (prop_query == "") {
+            prop_query = null;
+        }
+        if (sleep_query == "") {
+            sleep_query = null;
+        }
+        if (price_query == "") {
+            price_query = null;
+        }
+        if (amts_query == "") {
+            amts_query = null;
+        }
+        var sortBy = null;
+        var radios = document.getElementsByName("sort");
+        for (var i=0; i<radios.length; i++) {
+            if (radios[i].checked) {
+                sortBy = radios[i].value;
+            }
+        }
+        location.href = "http://127.0.0.1:5000/search/" + 1 + "/" + perPage + "/" + dest_query + "/" + prop_query + "/" + sleep_query + "/" + price_query + "/" + amts_query + "/" + sortBy; 
+    }
+    function add() {
+        var dest_add = document.getElementById("dest_add").value;
+        var prop_add = document.getElementById("prop_add").value;
+        var sleep_add = document.getElementById("sleep_add").value;
+        var price_add = document.getElementById("price_add").value;
+        var amts_add = document.getElementById("amts_add").value;
+        if (amts_add == "") {
+            amts_add = "null"
+        }
+        location.href = "http://127.0.0.1:5000/addProperty/" + dest_add + "/" + prop_add + "/" + sleep_add + "/" + price_add + "/" + amts_add + "/" + null;
+    }
+    function remove(destination, property_timestamp_id) {
+        destination.replace(" ", "-")
+        location.href = "http://127.0.0.1:5000/removeProperty/" + destination + "/" + property_timestamp_id
+    }
+    function modify(property_timestamp_id, button) {
+        var row = button.parentNode.parentNode;
+        // console.log(row);
+        var rowIndex = row.rowIndex;
+        // console.log(rowIndex);
+        // console.log(row.children[0].innerHTML);
+        // console.log("----");
+        // console.log(row.children);
+        var destination = row.children[0].innerHTML;
+        var name = row.children[1].innerHTML;
+        var sleeps = row.children[2].innerHTML;
+        var price = row.children[3].innerHTML;
+        var amenities = row.children[4].innerHTML;
+
+        var table = row.parentNode;
+        var new_row = table.insertRow(rowIndex + 1);
+        var cell_destination = new_row.insertCell(0);
+        var cell_name = new_row.insertCell(1);
+        var cell_sleeps = new_row.insertCell(2);
+        var cell_price = new_row.insertCell(3);
+        var cell_amenities = new_row.insertCell(4);
+        var cell_button = new_row.insertCell(5);
+
+        cell_destination.innerHTML = '<input type="text" name="dest_val" id="dest_val" value=' + destination + '>';
+        cell_name.innerHTML = '<input type="text" name="prop_val" id="prop_val" value=' + name + '>';
+        cell_sleeps.innerHTML = '<input type="number" name="sleep_val" id="sleep_val" value=' + sleeps + '>';
+        cell_price.innerHTML = '<input type="number" name="price_val" id="price_val" value=' + price + '>';
+        cell_amenities.innerHTML = '<input type="text" name="amts_val" id="amts_val" value=' + amenities + '>';
+        cell_button.innerHTML = "<button onclick='applyChanges(property_timestamp_id)'>Apply changes</button>".replace("property_timestamp_id", property_timestamp_id);
+    }
+    function applyChanges(property_timestamp_id) {
+        var destination = document.getElementById('dest_val').value;
+        var name = document.getElementById('prop_val').value;
+        console.log(name);
+        var sleeps = document.getElementById('sleep_val').value;
+        var price = document.getElementById('price_val').value;
+        var amenities = document.getElementById('amts_val').value;
+        location.href = "http://127.0.0.1:5000/editProperty/" + destination + "/" + name + "/" + sleeps + "/" + price + "/" + amenities + "/" + property_timestamp_id;
+    }
+</script>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Destination</th>
+            <th>Property Name</th>
+            <th>Sleep Capacity</th>
+            <th>Price</th>
+            <th>General Amenities</th>
+        </tr>
+    {% for property in property_results %}
+        <tr>
+            <td>{{property.name}}</td>
+            <td>{{property.properties.name}}</td>
+            <td>{{property.properties.max_sleeps}}</td>
+            <td>{{property.properties.price}}</td>
+            <td>
+                {% for amenity in property.properties.general_amenities %}
+                    {{amenity}},
+                {% endfor %}
+            </td>
+<!--            <td>{{property.properties.general_amenities}}</td> -->
+            <td><button onclick="remove('{{property.name}}','{{property.properties.timestamp_id}}')">Remove</button></td>
+            <td><button onclick="modify('{{property.properties.timestamp_id}}', this)">Modify</button></td>
+        </tr>
+    {% endfor %}
+    </table>
+    <div id="navigation_div">
+        <p>page: <span id="page">{{page}}</span></p>
+        <button onclick="nextPage()">Next page</button>
+        <p>Results per page: <input type="text" name="per_page" id="per_page" value="{{per_page}}" size="3"></p>
+        <button onclick="reload()">Reload</button>
+    </div>
+    <hr>
+    <div id="search_div" style="float:left">
+        <p>Search:</p>
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Query</th>
+                <th>Sort by</th>
+            </tr>
+            <tr>
+                <td>Destination</td>
+                <td><input type="text" name="dest_query" id="dest_query" value="{{dest_query}}" size="6"></td>      
+                <td>
+                    <input type="radio" name="sort" value="dest1" {% if sort_by == "dest1" %} checked {% endif %}>Asc
+                    <input type="radio" name="sort" value="dest-1" {% if sort_by == "dest-1" %} checked {% endif %}>Desc
+                </td>
+            </tr>
+            <tr>
+                <td>Property</td>
+                <td><input type="text" name="prop_query" id="prop_query" value="{{prop_query}}" size="6"></td>      
+                <td>
+                    <input type="radio" name="sort" value="prop1" {% if sort_by == "prop1" %} checked {% endif %}>Asc
+                    <input type="radio" name="sort" value="prop-1" {% if sort_by == "prop-1" %} checked {% endif %}>Desc
+                
+                </td>
+            </tr>
+            <tr>
+                <td>Max capacity</td>
+                <td><input type="text" name="sleep_query" id="sleep_query" value="{{sleep_query}}" size="6"></td>      
+                <td>
+                    <input type="radio" name="sort" value="sleep1" {% if sort_by == "sleep1" %} checked {% endif %}>Asc
+                    <input type="radio" name="sort" value="sleep-1" {% if sort_by == "sleep-1" %} checked {% endif %}>Desc                
+                </td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td><input type="text" name="price_query" id="price_query" value="{{price_query}}" size="6"></td>      
+                <td>
+                    <input type="radio" name="sort" value="price1" {% if sort_by == "price1" %} checked {% endif %}>Asc
+                    <input type="radio" name="sort" value="price-1" {% if sort_by == "price-1" %} checked {% endif %}>Desc                
+                </td>
+            </tr>
+            <tr>
+                <td>Amenities</td>
+                <td><input type="text" name="amts_query" id="amts_query" value="{{amts_query}}" size="6"></td>      
+                <td>
+                    <input type="radio" name="sort" value="amts1" {% if sort_by == "amts1" %} checked {% endif %}>Asc
+                    <input type="radio" name="sort" value="amts-1" {% if sort_by == "amts-1" %} checked {% endif %}>Desc                    
+                </td>
+            </tr>
+        </table>
+        <button onclick="search()">Search</button>
+    </div>
+    <div id="add_div" style="float:right">
+        <p>Add new property:</p>
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Destination</td>
+                <td><input type="text" name="dest_add" id="dest_add" required size="6"></td>     
+            </tr>
+            <tr>
+                <td>Property</td>
+                <td><input type="text" name="prop_add" id="prop_add" required size="6"></td>
+            </tr>
+            <tr>
+                <td>Max capacity</td>
+                <td><input type="number" name="sleep_add" id="sleep_add" required size="6"></td>      
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td><input type="number" name="price_add" id="price_add" required size="6"></td>      
+            </tr>
+            <tr>
+                <td>Amenities list</td>
+                <td><input type="text" name="amts_add" id="amts_add" required size="6"></td>      
+            </tr>
+        </table>
+        <button onclick="add()">Add</button>
+    </div>
+</body>
